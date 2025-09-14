@@ -18,7 +18,9 @@ public class ShaderProgram {
         }
 
         List<Integer> shaderModules = new ArrayList<>();
-        shaderModuleDataList.forEach(s -> shaderModules.add(createShader(Utils.readFile(s.shaderFile),s.shaderType)));
+
+        shaderModuleDataList.forEach(s ->
+            shaderModules.add(createShader(Utils.readFile(s.shaderFile),s.shaderType)));
 
         link(shaderModules);
     }
