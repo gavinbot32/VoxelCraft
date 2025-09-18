@@ -1,7 +1,12 @@
 package engine;
 
+import engine.constants.IOConst;
 import engine.graph.Render;
+import engine.graph.TextureArray;
 import engine.scene.Scene;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Engine {
 
@@ -22,7 +27,7 @@ public class Engine {
         targetFps = opts.fps;
         targetUps = opts.ups;
         this.appLogic = appLogic;
-        render = new Render();
+        render = new Render(appLogic);
         scene = new Scene(window.getWidth(),window.getHeight());
         appLogic.init(window, scene, render);
         running = true;
@@ -43,6 +48,7 @@ public class Engine {
             deltaFps += (now - initialTime) / timeR;
 
             if(targetFps <= 0 || deltaFps >= 1){
+                window.getMouseInput().input();
                 appLogic.input(window, scene, now - initialTime);
             }
 
@@ -64,7 +70,6 @@ public class Engine {
         cleanup();
 
     }
-
 
     private void cleanup(){
         appLogic.cleanup();

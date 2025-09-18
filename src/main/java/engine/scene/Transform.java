@@ -4,18 +4,15 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class Entity {
-
+public class Transform {
     private final String id;
-    private final String modelId;
     private Matrix4f modelMatrix;
     private Vector3f position;
     private Quaternionf rotation;
     private  float scale;
 
-    public Entity(String id, String modelId){
+    public Transform(String id){
         this.id = id;
-        this.modelId = modelId;
         modelMatrix = new Matrix4f();
         position = new Vector3f();
         rotation = new Quaternionf();
@@ -24,10 +21,6 @@ public class Entity {
 
     public String getId() {
         return id;
-    }
-
-    public String getModelId() {
-        return modelId;
     }
 
     public Matrix4f getModelMatrix() {

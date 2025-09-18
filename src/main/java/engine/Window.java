@@ -1,21 +1,16 @@
 package engine;
 
-import org.lwjgl.Version;
+import engine.input.InputManager;
+import engine.input.MouseInput;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-
-import javax.management.RuntimeErrorException;
-import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -25,6 +20,8 @@ public class Window {
     private int height;
     private Callable<Void> resizeFunc;
     private int width;
+    private InputManager input;
+    private MouseInput mouseInput;
 
 
     public Window(String title, WindowOptions opts, Callable<Void> resizeFunc){
@@ -67,6 +64,14 @@ public class Window {
             throw new RuntimeException(String.format("Error code [{}], msg [{}]", errorCode, MemoryUtil.memUTF8(msgPtr)));
         });
 
+        //--Input Callbacks
+        input = new InputManager();
+        mouseInput = new MouseInput(windowHandle);
+        glfwSetKeyCallback(windowHandle, input::keyCallBack);
+
+
+
+        //---
         glfwMakeContextCurrent(windowHandle);
 
         if(opts.fps > 0){
@@ -84,12 +89,6 @@ public class Window {
         height = arrHeight[0];
     }
 
-    public void keyCallBack(int key, int action){
-        if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
-            glfwSetWindowShouldClose(windowHandle, true);
-        }
-    }
-
     public void cleanup(){
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);
@@ -98,6 +97,14 @@ public class Window {
         if(callback != null){
             callback.free();
         }
+    }
+
+    public InputManager getInput(){
+        return input;
+    }
+
+    public MouseInput getMouseInput() {
+        return mouseInput;
     }
 
     public int getHeight(){
@@ -109,9 +116,6 @@ public class Window {
     }
     public long getWindowHandle(){
         return windowHandle;
-    }
-    public boolean isKeyPressed(int keyCode){
-        return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
     public void pollEvents(){
         glfwPollEvents();
@@ -129,6 +133,7 @@ public class Window {
 
     public void update(){
         glfwSwapBuffers(windowHandle);
+        input.update();
     }
 
     public boolean windowShouldClose(){
